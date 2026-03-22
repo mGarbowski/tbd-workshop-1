@@ -337,9 +337,27 @@ Steps:
 
 Hint: use the existing `.github/workflows/destroy.yml` as a starting point.
 
-***paste workflow YAML here***
+```yml
+name: Auto Destroy
+description: Automatically destroy GCP infrastructure on schedule or on merging PR to master that contains "[CLEANUP]" in the title in order to prevent accidental costs.
+on:
+  schedule:
+    - cron: '0 0 * * *' # Every day at midnight
+  pull_request:
+    types:
+      - closed
+    branches:
+      - master
 
-***paste screenshot/log snippet confirming the auto-destroy ran***
+
+permissions: read-all
+jobs:
+  destroy-release:
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.title, '[CLEANUP]')
+    #.... same as destroy.yml
+```
+
+![GitHub Actions screenshot](./doc/report/task-12-screenshot.png)
 
 A workflow like this that runs on cron schedule could prevent unwanted costs if I were to forget to manually run the destroy workflow.
 Then, the cloud infrastructure would still be online and generating costs.
