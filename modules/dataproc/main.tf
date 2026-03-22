@@ -121,7 +121,7 @@ resource "google_dataproc_cluster" "tbd-dataproc-cluster" {
       machine_type  = var.machine_type
       disk_config {
         boot_disk_type    = "pd-standard"
-        boot_disk_size_gb = 10
+        boot_disk_size_gb = 30
       }
     }
 
