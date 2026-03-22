@@ -81,6 +81,6 @@ resource "google_container_node_pool" "airflow_nodes" {
     oauth_scopes    = ["https://www.googleapis.com/auth/cloud-platform"]
 
     disk_type    = "pd-standard"
-    disk_size_gb = 10
+    disk_size_gb = 30
   }
 }

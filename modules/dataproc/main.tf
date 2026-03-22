@@ -132,13 +132,13 @@ resource "google_dataproc_cluster" "tbd-dataproc-cluster" {
 
 
     preemptible_worker_config {
-      num_instances = 2
+      num_instances = 1
       # machine_type inherited from worker_config
       # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dataproc_cluster.html#nested_preemptible_worker_config
       preemptibility = "PREEMPTIBLE"
       disk_config {
         boot_disk_type    = "pd-standard"
-        boot_disk_size_gb = 10
+        boot_disk_size_gb = 30
       }
     }
   }
