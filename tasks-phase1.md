@@ -1,59 +1,4 @@
-IMPORTANT ❗ ❗ ❗ Please remember to destroy all the resources after each work session. You can recreate infrastructure by creating new PR and merging it to master.
-
-![img.png](doc/figures/destroy.png)
-                                                                                                                                                                                                                                                                                                                                                                                  
 ## Phase 1 Exercise Overview
-
-  ```mermaid
-  flowchart TD
-      A[🔧 Step 0: Fork repository] --> B[🔧 Step 1: Environment variables\nexport TF_VAR_*]
-      B --> C[🔧 Step 2: Bootstrap\nterraform init/apply\n→ GCP project + state bucket]
-      C --> D[🔧 Step 3: Quota increase\nCPUS_ALL_REGIONS ≥ 24]
-      D --> E[🔧 Step 4: CI/CD Bootstrap\nWorkload Identity Federation\n→ keyless auth GH→GCP]
-      E --> F[🔧 Step 5: GitHub Secrets\nGCP_WORKLOAD_IDENTITY_*\nINFRACOST_API_KEY]
-      F --> G[🔧 Step 6: pre-commit install]
-      G --> H[🔧 Step 7: Push + PR + Merge\n→ release workflow\n→ terraform apply]
-
-      H --> I{Infrastructure\nrunning on GCP}
-
-      I --> J[📋 Task 3: Destroy\nGitHub Actions → workflow_dispatch]
-      I --> K[📋 Task 4: New branch\nModify tasks-phase1.md\nPR → merge → new release]
-      I --> L[📋 Task 5: Analyze Terraform\nterraform plan/graph\nDescribe selected module]
-      I --> M[📋 Task 6: YARN UI\ngcloud compute ssh\nIAP tunnel → port 8088]
-      I --> N[📋 Task 7: Architecture diagram\nService accounts + buckets]
-      I --> O[📋 Task 8: Infracost\nUsage profiles for\nartifact_registry + storage_bucket]
-      I --> P[📋 Task 9: Spark job fix\nAirflow UI → DAG → debug\nFix spark-job.py]
-      I --> Q[📋 Task 10: BigQuery\nDataset + external table\non ORC files]
-      I --> R[📋 Task 11: Spot instances\npreemptible_worker_config\nin Dataproc module]
-      I --> S[📋 Task 12: Auto-destroy\nNew GH Actions workflow\nschedule + cleanup tag]
-
-      style A fill:#4a9eff,color:#fff
-      style B fill:#4a9eff,color:#fff
-      style C fill:#4a9eff,color:#fff
-      style D fill:#ff9f43,color:#fff
-      style E fill:#4a9eff,color:#fff
-      style F fill:#ff9f43,color:#fff
-      style G fill:#4a9eff,color:#fff
-      style H fill:#4a9eff,color:#fff
-      style I fill:#2ed573,color:#fff
-      style J fill:#a55eea,color:#fff
-      style K fill:#a55eea,color:#fff
-      style L fill:#a55eea,color:#fff
-      style M fill:#a55eea,color:#fff
-      style N fill:#a55eea,color:#fff
-      style O fill:#a55eea,color:#fff
-      style P fill:#a55eea,color:#fff
-      style Q fill:#a55eea,color:#fff
-      style R fill:#a55eea,color:#fff
-      style S fill:#a55eea,color:#fff
-```
-
-  Legend
-
-  - 🔵 Blue — setup steps (one-time configuration)
-  - 🟠 Orange — manual steps (GCP Console / GitHub UI)
-  - 🟢 Green — infrastructure ready
-  - 🟣 Purple — tasks to complete and document in tasks-phase1.md
 
 1. Authors:
 
@@ -96,7 +41,7 @@ IMPORTANT ❗ ❗ ❗ Please remember to destroy all the resources after each wo
     To check node name and zone
 
     ```bash
-        ➜  tbd-workshop-1 git:(task-5) gcloud compute instances list --project=tbd-2026l-325157                                                                  
+        tbd-workshop-1 git:(task-5) gcloud compute instances list --project=tbd-2026l-325157                                                                  
     NAME                                            ZONE            MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     STATUS
     gke-airflow-cluster-airflow-pool-ede3a231-89w6  europe-west1-b  e2-standard-2               10.10.10.5   34.76.166.60    RUNNING
     gke-airflow-cluster-airflow-pool-ede3a231-ccdf  europe-west1-b  e2-standard-2               10.10.10.4   104.155.45.179  RUNNING
@@ -118,41 +63,6 @@ IMPORTANT ❗ ❗ ❗ Please remember to destroy all the resources after each wo
 
     ![Component diagram with service accounts and buckets](./doc/report/task-7-component-diagram.png)
 
-    ```puml
-    @startuml
-
-    ' Define Components
-    component "Dataproc Cluster" as dataproc_cluster
-    component "Airflow Nodes" as airflow_nodes
-    component "Composer" as composer
-
-    ' Define Buckets
-    component "Staging Bucket" as staging_bucket
-    component "Temp Bucket" as temp_bucket
-    component "Code Bucket" as code_bucket
-    component "Data Bucket" as data_bucket
-    component "State Bucket" as state_bucket
-
-    ' Define Service Accounts
-    component "Dataproc Service Account" as dataproc_sa
-    component "Terraform Service Account" as terraform_sa
-    component "IAC Service Account" as iac_sa
-    component "Airflow Service Account" as airflow_sa
-    component "Composer Service Account" as composer_sa
-
-    ' Connect Service Accounts to Components and Buckets
-    dataproc_sa --> staging_bucket
-            dataproc_sa --> temp_bucket
-            dataproc_sa --> data_bucket
-            dataproc_sa --> code_bucket
-            dataproc_sa --> dataproc_cluster
-
-    airflow_sa --> airflow_nodes
-
-    composer_sa --> composer
-
-    @enduml
-    ```
 
 
 8. Create a new PR and add costs by entering the expected consumption into Infracost
@@ -182,7 +92,7 @@ create a sample usage profiles and add it to the Infracost task in CI/CD pipelin
     kubectl get svc -n airflow airflow-webserver                                                                                                                                                                 
                                               
                                                                                                                                                                                                                
-    ▎ Note: If EXTERNAL-IP shows <pending>, wait a moment and retry — LoadBalancer IP allocation may take 1-2 minutes.  
+    Note: If EXTERNAL-IP shows <pending>, wait a moment and retry — LoadBalancer IP allocation may take 1-2 minutes.  
 
     DAG files are synced automatically from your GitHub repo via git-sync sidecar.
     Airflow variables and the `google_cloud_default` GCP connection are also configured by Terraform.
@@ -244,7 +154,7 @@ create a sample usage profiles and add it to the Infracost task in CI/CD pipelin
 
     ![Airflow successful DAG run](./doc/report/task-9-success.png)
 
-10.  Create a BigQuery dataset and an external table using SQL
+10. Create a BigQuery dataset and an external table using SQL
 
     Using the ORC data produced by the Spark job in task 9, create a BigQuery dataset and an external table.
 
@@ -291,7 +201,7 @@ create a sample usage profiles and add it to the Infracost task in CI/CD pipelin
 
 11.  Add support for preemptible/spot instances in a Dataproc cluster
 
-    [modules/dataproc/main.tf](modules/dataproc/main.tf)
+    [modules/dataproc/main.tf](https://github.com/mGarbowski/tbd-workshop-1/blob/master/modules/dataproc/main.tf)
 
     ```tf
     resource "google_dataproc_cluster" "tbd-dataproc-cluster" {
